@@ -13,19 +13,28 @@ var searchStories = function (session) {
       var result = JSON.parse(body);
 
       if(result.hits.length === 0){
-        // no news
+        // no stores
         session.send("Nothing yet. Let’s try another search.");
       } else {
-        // have news
+        // have stores
         session.send("Here are the latest stories related to " + session.message.text);
 
-        // show news
+        // show stores
         for (i = 0; i < storiesToShow; i++) { 
           if(result.hits[i] === undefined) break;
 
-          var msg = "[" + result.hits[i].title + "](" + result.hits[i].url + ")";
-          session.send(msg);
+          // only show stores with url
+          if(result.hits[i].url) {
+            var msg = "[" + result.hits[i].title + "](" + result.hits[i].url + ")";
+            session.send(msg);
+          } else {
+            // make it loop one more time
+            storiesToShow++;
+          }
         }
+
+        // reset
+        storiesToShow = 3;
       }
     } else {
       session.send("Sorry there was an error.");
